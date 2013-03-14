@@ -1,4 +1,4 @@
-<cfcomponent name="aemis.unittests.saltAndHashTests" extends="mxunit.framework.TestCase" output="false">
+<cfcomponent name="saltAndHashTests" extends="mxunit.framework.TestCase" output="false">
 		<cffunction name="simpleSaltAndHashTest" access="public">
 
 			<cfset var i = 0 />
@@ -12,6 +12,8 @@
 
 
 				<cfset assertFalse(local.hash.hashedString EQ local.secondHash.hashedString, "failure: hashes are equal! on iteration #i#")>
+
+				<cfset assertFalse(saltAndHasher.validateHashedString(local.password & i, local.hash.salt, local.hash.hashMethod, local.hash.hashedString), "failure: validated the hash on the wrong password! on iteration #i#")>
 
 				<cfset assertTrue(saltAndHasher.validateHashedString(local.password, local.hash.salt, local.hash.hashMethod, local.hash.hashedString), "failure: unable to validate the hash! on iteration #i#")>
 

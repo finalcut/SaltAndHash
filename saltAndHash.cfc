@@ -99,6 +99,7 @@
 		<cfset var newAry = charsetdecode(newHash.hashedString, "us-ascii") />
 		<cfset var oldAry = charsetdecode(hashedString, "us-ascii") />
 
+
 		<cfreturn slowEquals(oldAry, newAry) />
 
 	</cffunction>
@@ -106,14 +107,22 @@
 	<cffunction name="slowEquals" access="private" returntype="boolean" output="false" hint="makes sure comparision always takes as long as possible based on the two arrays">
 		<cfargument name="a" type="array" required="true" />
 		<cfargument name="b" type="array" required="true" />
+		<cfdump var="#arguments#">
 		<cfscript>
 			var i = 0;
 			var diff = ArrayLen(arguments.a) NEQ ArrayLen(arguments.b);
-			for(i=0; i LT ArrayLen(arguments.a) AND i LT ArrayLen(arguments.b); i=i+1){
-				diff = (arguments[a] NEQ arguments[b]) AND diff;
+			for(i=1; i LTE ArrayLen(arguments.a) AND i LTE ArrayLen(arguments.b); i=i+1){
+				diff = (arguments.a[i] NEQ arguments.b[i]) OR diff;
 			}
 			return NOT diff;
 		</cfscript>
+	</cffunction>
+	<cffunction name="dump" access="private">
+		<cfargument name="p" type="any">
+		<cfdump var="#arguments.p#">
+	</cffunction>
+	<cffunction name="abort" access="private">
+		<cfabort>
 	</cffunction>
 
 
