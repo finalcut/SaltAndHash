@@ -38,7 +38,7 @@ Usage:
 <!--- reproduce the hash if you have the hash method and salt already --->
 
 <cfscript>
-	passwordIsValid = saltAndHasher.validatedHashedString("myPassword", passwordData.salt, passwordData.hashMethod, passwordData.hashedString)
+	passwordIsValid = saltAndHasher.validateHashedString("myPassword", passwordData.salt, passwordData.hashMethod, passwordData.hashedString)
 
 	assertTrue(passwordIsValid);
 </cfscript>
