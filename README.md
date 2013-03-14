@@ -39,8 +39,12 @@ Usage:
 
 <cfscript>
 	saltAndHasher = createObject("component","saltAndHash").init();
-	passwordData2 = saltAndHasher.saltAndHash("myPassword", passwordData.salt, passwordData.hashMethod);
 
-	assert.equals(passwordData.hashedString, passwordData2.hashedString);
+	passwordIsValid = saltAndHasher.validatedHashedString("myPassword", passwordData.salt, passwordData.hashMethod, passwordData.hashedString)
+
+	assertTrue(passwordIsValid);
 </cfscript>
+
+
+<
 
