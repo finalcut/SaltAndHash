@@ -38,8 +38,6 @@ Usage:
 <!--- reproduce the hash if you have the hash method and salt already --->
 
 <cfscript>
-	saltAndHasher = createObject("component","saltAndHash").init();
-
 	passwordIsValid = saltAndHasher.validatedHashedString("myPassword", passwordData.salt, passwordData.hashMethod, passwordData.hashedString)
 
 	assertTrue(passwordIsValid);
