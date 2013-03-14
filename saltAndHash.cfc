@@ -1,5 +1,5 @@
 <cfcomponent name="saltAndHash"  output="false" >
-	<cffunction name="init" access="public" returntype="saltAndHash">
+	<cffunction name="init" access="public" returntype="saltAndHash" output="false">
 		<!--- I only support SHA 256, 384, and 512 so I work on CF standard --->
 		<cfscript>
 			variables.instance = structNew();
@@ -9,15 +9,14 @@
 
 	</cffunction>
 
-	<cffunction name="makeSalt" access="private" returntype="string">
-		<cfset var salt = generateRandomString(38,45) />
-		<cfreturn salt & createUUID() />
+	<cffunction name="makeSalt" access="private" returntype="string" output="false">
+		<cfreturn generateRandomString(38,45,true,true) & createUUID() />
 	</cffunction>
-	<cffunction name="generateRandomString" access="private" returntype="string" >
+	<cffunction name="generateRandomString" access="private" returntype="string" output="false">
 		<cfargument name="minLength"	type="numeric"	default="0" />
 		<cfargument name="maxLength"	type="numeric"	default="10" />
-		<cfargument name="numeric"		type="boolean"	default="true" />
-		<cfargument name="symbols"		type="boolean"	default="true" />
+		<cfargument name="numeric"	type="boolean"	default="true" />
+		<cfargument name="symbols"	type="boolean"	default="true" />
 
 
 		<cfset var local = structNew() />
@@ -81,17 +80,47 @@
 
 		<cfreturn local.randomString />
 	</cffunction>
-	<cffunction name="pickHashMethod" access="private" returntype="numeric" hint="I only support SHA 256, 384, and 512 so I work on CF standard">
+	<cffunction name="pickHashMethod" access="private" returntype="numeric" hint="I only support SHA 256, 384, and 512 so I work on CF standard" output="false">
 		<cfscript>
 			sleep(1);
 			randomize(TimeFormat(Now(),"l"));
 			return variables.instance.validHashes[RandRange(1,3)];
 		</cfscript>
 	</cffunction>
-	<cffunction name="saltAndHash" access="public" returntype="struct" hint="struct contains hashed string, hash method, and salt">
-		<cfargument name="stringToBeHashed" type="string" required="true" />
-		<cfargument name="salt" type="string" required="false" default="" />
-		<cfargument name="hashMethod" type="numeric" required="false" default="0"  hint="must be 0, 256,384, or 512" />
+
+
+	<cffunction name="validateHashedString" access="public" returntype="boolean" output="false" hint="makes sure comparision always takes as long as possible based on the two strings">
+		<cfargument name="stringToBeHashed"	type="string" required="true" />
+		<cfargument name="salt"			type="string" required="true"/>
+		<cfargument name="hashMethod"		type="numeric" required="true"  hint="must be 0, 256,384, or 512" />
+		<cfargument name="hashedString"		type="string" required="true" />
+
+		<cfset var newHash = saltAndHash(stringToBeHashed, salt, hashMethod) />
+		<cfset var newAry = charsetdecode(newHash.hashedString, "us-ascii") />
+		<cfset var oldAry = charsetdecode(hashedString, "us-ascii") />
+
+		<cfreturn slowEquals(oldAry, newAry) />
+
+	</cffunction>
+
+	<cffunction name="slowEquals" access="private" returntype="boolean" output="false" hint="makes sure comparision always takes as long as possible based on the two arrays">
+		<cfargument name="a" type="array" required="true" />
+		<cfargument name="b" type="array" required="true" />
+		<cfscript>
+			var i = 0;
+			var diff = ArrayLen(arguments.a) NEQ ArrayLen(arguments.b);
+			for(i=0; i LT ArrayLen(arguments.a) AND i LT ArrayLen(arguments.b); i=i+1){
+				diff = (arguments[a] NEQ arguments[b]) AND diff;
+			}
+			return NOT diff;
+		</cfscript>
+	</cffunction>
+
+
+	<cffunction name="saltAndHash" access="public" returntype="struct" hint="struct contains hashed string, hash method, and salt" output="false">
+		<cfargument name="stringToBeHashed"	type="string" required="true" />
+		<cfargument name="salt"			type="string" required="false"  default="" />
+		<cfargument name="hashMethod"		type="numeric" required="false" default="0"  hint="must be 0, 256,384, or 512" />
 
 		<cfset var returnStruct = StructNew() />
 		<cfset var hashedString = arguments.stringToBeHashed />
