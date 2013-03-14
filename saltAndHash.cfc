@@ -1,9 +1,9 @@
 <cfcomponent name="saltAndHash"  output="false" >
 	<cffunction name="init" access="public" returntype="saltAndHash">
+		<!--- I only support SHA 256, 384, and 512 so I work on CF standard --->
 		<cfscript>
-
 			variables.instance = structNew();
-			variables.instance.validHashes = [256,384,512]; <!--- I only support SHA 256, 384, and 512 so I work on CF standard --->
+			variables.instance.validHashes = [256,384,512];
 		</cfscript>
 		<cfreturn this />
 
